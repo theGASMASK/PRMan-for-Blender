@@ -2418,7 +2418,7 @@ def export_render_settings(ri, rpass, scene, preview=False):
     ri.Attribute("trace", depths)
     if rm.use_statistics:
         ri.Option("statistics", {'int endofframe': 1,
-                                 'string xmlfilename': 'stats.xml'})
+                                 'string xmlfilename': 'stats.%04d.xml' % scene.frame_current})
 
 
 def export_camera_matrix(ri, scene, ob, motion_data=[]):
@@ -2771,7 +2771,7 @@ def export_display(ri, rpass, scene):
                 params = {"int asrgba": 1}
                 if doit:
                     dspy_name = image_base + \
-                        '.%s.%s.' % (layer_name, aov) + ext
+                        '.%s.%s.%04d.' % (layer_name, aov, scene.frame_current) + ext
                     ri.Display('+' + dspy_name, display_driver, aov, params)
                     rpass.output_files.append(dspy_name)
 
@@ -2883,7 +2883,7 @@ def export_display(ri, rpass, scene):
                 if rm_rl.exr_compression != 'default':
                     params["string compression"] = rm_rl.exr_compression
                 ri.Display('+' + image_base + '.%s' % layer_name +
-                           '.multilayer.' + ext, out_type, ','.join(channels), params)
+                           '.multilayer.%04d.' % (scene.frame_current) + ext, out_type, ','.join(channels), params)
 
             else:
                 for aov in rm_rl.custom_aovs:
@@ -2899,11 +2899,11 @@ def export_display(ri, rpass, scene):
                     if not rpass.external_render:
                         params = {"int asrgba": 1}
                     if aov.denoise_aov:
-                        ri.Display('+' + image_base + '.%s.%s.denoiseable.' %
-                                   (layer_name, aov_name) + ext, display_driver, aov.channel_name)
+                        ri.Display('+' + image_base + '.%s.%s.denoiseable.%04d.' %
+                                   (layer_name, aov_name, scene.frame_current) + ext, display_driver, aov.channel_name)
                     else:
                         dspy_name = image_base + \
-                            '.%s.%s.' % (layer_name, aov_name) + ext
+                            '.%s.%s.%04d.' % (layer_name, aov_name, scene.frame_current) + ext
                         ri.Display('+' + dspy_name, display_driver,
                                    aov.channel_name, params)
                         rpass.output_files.append(dspy_name)
